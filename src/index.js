@@ -26,7 +26,7 @@ app.get("/:id/trailer", (req, res) => {
       });
     }
 
-    res.status(404).send({ error: "Inexistent ID" });
+    res.status(404).send({ error: "No trailer available" });
   });
 });
 
