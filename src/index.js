@@ -8,6 +8,8 @@ const port = process.env.PORT || 3000;
 app.get("/:id/trailer", (req, res) => {
   const id = req.params.id;
   const url = `http://www.imdb.com/title/${id}`;
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "*");
 
   request(url, (error, response, html) => {
     if (error) return res.status(500).send({ error: "Something went wrong" });
