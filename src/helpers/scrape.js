@@ -10,10 +10,9 @@ const scrape = (url, elementSelector) => {
 
       const element = $(elementSelector);
 
-      if (element.attr()) {
-        return resolve(element);
+      if (!element.attr()) {
+        element.error = true;
       }
-      element.error = true;
       return resolve(element);
     });
   });
