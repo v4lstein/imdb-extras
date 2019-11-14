@@ -22,7 +22,7 @@ app.get("/:id/trailer", async (req, res) => {
       ".slate_button.prevent-ad-overlay.video-modal"
     );
   } catch (e) {
-    return res.status(500).send("Something went wrong");
+    return res.status(500).send({ error: "Something went wrong" });
   }
 
   if (trailerElement.error) {
@@ -45,7 +45,7 @@ app.get("/:id/poster", async (req, res) => {
   try {
     posterElement = await scrape(url, ".poster img");
   } catch (e) {
-    return res.status(500).send("Something went wrong");
+    return res.status(500).send({ error: "Something went wrong" });
   }
 
   if (posterElement.error) {
@@ -58,6 +58,42 @@ app.get("/:id/poster", async (req, res) => {
     id,
     posterAlt,
     posterLocation
+  });
+});
+
+app.get("/:id/photos", async (req, res) => {
+  const id = req.params.id;
+  const url = `http://www.imdb.com/title/${id}/mediaindex`;
+  let limit = parseInt(req.query.limit);
+  // Ensure that the limit param is an int
+  if (isNaN(limit)) {
+    limit = 48;
+  }
+
+  let photoElements;
+  try {
+    photoElements = await scrape(url, "#media_index_thumbnail_grid img");
+  } catch (e) {
+    return res.status(500).send({ error: "Something went wrong" });
+  }
+
+  if (photoElements.error) {
+    return res.status(404).send({ error: "No photos available" });
+  }
+
+  const photos = [];
+
+  for (let i = 0; i < photoElements.length && i < limit; i++) {
+    const photoAttribs = photoElements[i].attribs;
+    photos.push({
+      photoLocation: photoAttribs.src,
+      photoAlt: photoAttribs.alt
+    });
+  }
+
+  return res.send({
+    id,
+    photos
   });
 });
 
